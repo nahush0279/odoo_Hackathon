@@ -6,12 +6,7 @@ import { ApiResponse } from "../utils/apiResponse.js";
 import mongoose from "mongoose";
 
 const product = asyncHandler(async (req, res) => {
-    // const {name, description, category, rentalPrice, location} = req.body
-    const name = 'study cupboard'
-    const description = 'description about cupboard'
-    const category = 'sitting'
-    const rentalPrice = 1000
-    const location = 'ahmedabad'
+    const {name, description, category, rentalPrice, location} = req.body
 
     if(!(name && description && category && rentalPrice && location)){
         return res.status(400).json(
@@ -95,28 +90,116 @@ const product = asyncHandler(async (req, res) => {
     )
 }) 
 
-// const updateProduct = asyncHandler(async(req, res) => {
-//     const { name, description, category, rentalPrice, location } = req.body;
-//     if(!(name && description && category && rentalPrice && location)){
-//         return res.status(400).json(
-//             new ApiResponse(400, {}, "Enter all the values")
-//         );
-//     }
-//     const updatedproduct = await User.findByIdAndUpdate(
-//         req.product?._id,
-//         {
-//             $set: {
-//                 name,
-//                 description,
-//                 category,
-//                 rentalPrice,
-//                 location,
-//             }
-//         },
-//         {new:true}, //return the updated document
-//     ).select("-password");
+const updateProduct = asyncHandler(async(req, res) => {
+    const { productId } = req.params
 
-// })
+    if(!productId){
+        return res.status(400).json(
+            new ApiResponse(400, {}, "productId is required")
+        )
+    }
+    const product = await Product.findById(productId)
+
+    if(!product){
+        return res.status(400).json(
+            new ApiResponse(400, {}, "Product not found")
+        )
+    }
+
+    const { name, description, category, rentalPrice,location } = req.body;
+
+    if(!(name && description && category && rentalPrice && location)){
+        return res.status(400).json(
+            new ApiResponse(400, {}, "Enter all the values")
+        );
+    }
+
+    const imageLocalPath5 = req.files?.image1[0]?.path;
+
+    const imageLocalPath6 = req.files?.image2[0]?.path;
+
+    const imageLocalPath7 = req.files?.image3[0]?.path;
+
+    const imageLocalPath8 = req.files?.image4[0]?.path;
+
+    if(!imageLocalPath5){
+        return res.status(400).json(
+            new ApiResponse(400, {}, "Image1 file required")
+        );
+    }
+    if(!imageLocalPath6){
+        return res.status(400).json(
+            new ApiResponse(400, {}, "Image2 file required")
+        );
+    }
+    if(!imageLocalPath7){
+        return res.status(400).json(
+            new ApiResponse(400, {}, "Image3 file required")
+        );
+    }
+    if(!imageLocalPath8){
+        return res.status(400).json(
+            new ApiResponse(400, {}, "Image4 file required")
+        );
+    }
+
+    const IMAGES5 = await uploadOnCloudinary(imageLocalPath5);
+    const IMAGES6 = await uploadOnCloudinary(imageLocalPath6);
+    const IMAGES7 = await uploadOnCloudinary(imageLocalPath7);
+    const IMAGES8 = await uploadOnCloudinary(imageLocalPath8);
+    
+
+    if(!IMAGES5){
+        return res.status(400).json(
+            new ApiResponse(400, {}, "something went wrong while uploading image1")
+        );
+    }
+    if(!IMAGES6){
+        return res.status(400).json(
+            new ApiResponse(400, {}, "something went wrong while uploading image2")
+        );
+    }
+    if(!IMAGES7){
+        return res.status(400).json(
+            new ApiResponse(400, {}, "something went wrong while uploading image3")
+        );
+    }
+    if(!IMAGES8){
+        return res.status(400).json(
+            new ApiResponse(400, {}, "something went wrong while uploading image4")
+        );
+    }
+
+    const updatedproduct = await Product.findByIdAndUpdate(
+        productId,
+        {
+            $set: {
+                name,
+                description,
+                category,
+                rentalPrice,
+                location,
+                image1: IMAGES5.url,
+                image2: IMAGES6.url,
+                image3: IMAGES7.url,
+                image4: IMAGES8.url
+            }
+        },
+        {new: true}
+    )
+    
+    if(!updatedproduct){
+        return res.status(400).json(
+            new ApiResponse(400, {}, "Something went wrong while updating")
+        );
+    }
+    res
+    .status(200)
+    .json(
+        new ApiResponse(200, updatedproduct, "user updated successfully")
+    )
+
+})
 
 const getAllProduct = asyncHandler(async(req, res) => {
     try {
@@ -134,8 +217,31 @@ const getAllProduct = asyncHandler(async(req, res) => {
     }
 })
 
+const deleteProduct = asyncHandler(async(req, res) => {
+    const { productId } = req.params
+    if(!productId){
+        return res.status(400).json(
+            new ApiResponse(400, {}, "Product Id is required")
+        );
+    }
+    const product = await Product.findById(productId)
+
+    if (!product){
+        return res.status(400).json(
+            new ApiResponse(400, {}, "Product not found")
+        )
+    }
+    const deletedproduct = await Product.findByIdAndDelete(productId)
+    res.status(400).json(
+
+        new ApiResponse(400, deletedproduct, "Product deleted")
+    )
+})
+
 
 export {
     product,
+    updateProduct,
     getAllProduct,
+    deleteProduct
 }

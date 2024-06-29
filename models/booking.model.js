@@ -1,23 +1,14 @@
-import mongoose from "mongoose"
+import mongoose, {Schema} from "mongoose"
 
 const bookingSchema = new Schema({
         seller : { 
             type: Schema.Types.ObjectId, 
-            ref: 'User',
+            ref: 'Product',
             required: true 
         },
-        owner : { 
+        buyer : { 
             type: Schema.Types.ObjectId,
-            ref: 'Product', 
-            required: true 
-        },
-        itemId: { 
-            type: Schema.Types.ObjectId, 
-            ref: 'Product', 
-            required: true 
-        },
-        rentalPrice: { 
-            type: Number, 
+            ref: 'User', 
             required: true 
         },
         rentalFrom: { 
@@ -33,9 +24,8 @@ const bookingSchema = new Schema({
             required: true 
         },
         status: { 
-            type: String, 
-            enum: ['Pending', 'Confirmed', 'Cancelled'], 
-            default: 'Pending' 
+            type: Boolean,
+            default: true 
         }
   }, { timestamps: true });
   

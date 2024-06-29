@@ -236,10 +236,53 @@ const deleteProduct = asyncHandler(async(req, res) => {
     )
 })
 
+const searchProducts = asyncHandler(async (req, res) => {
+    const { name, description, category, minRentalPrice, maxRentalPrice, location, owner } = req.query;
+    let query = {};
+
+    if (name) {
+        query.name = { $regex: name, $options: 'i' }; // Case-insensitive search
+    }
+
+    if (description) {
+        query.description = { $regex: description, $options: 'i' };
+    }
+
+    if (category) {
+        query.category = category;
+    }
+
+    if (minRentalPrice) {
+        query.rentalPrice = { ...query.rentalPrice, $gte: minRentalPrice };
+    }
+
+    if (maxRentalPrice) {
+        query.rentalPrice = { ...query.rentalPrice, $lte: maxRentalPrice };
+    }
+
+    if (location) {
+        query.location = { $regex: location, $options: 'i' };
+    }
+
+    if (owner) {
+        query.owner = owner;
+    }
+
+    const products = await Product.find(query);
+
+    res.status(200).json(new ApiResponse(200, products, 'Products retrieved successfully'));
+});
+
+const filter = asyncHandler(async(req, res) => {
+    
+})
+
+
 
 export {
     product,
     updateProduct,
     getAllProduct,
-    deleteProduct
+    deleteProduct,
+    searchProducts
 }

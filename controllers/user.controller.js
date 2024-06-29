@@ -102,8 +102,42 @@ const getDetail = asyncHandler(async(req, res) => {
     )
 })
 
+const updateDetails = asyncHandler(async(req, res) => {
+    // const { name, phone, email } = req.body
+    const name = 'meet';
+    const phone = '1234567890';
+    const email = 'meet@gmail.com';
+
+    if(!(name && phone && email)){
+        throw new ApiError(400, "Please provide all the details")
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+        req.user?._id,
+        {
+            $set: {
+                name,
+                email,
+                phone
+            }
+        },
+        {new:true}, //return the updated document
+    ).select("-password");
+
+    if(!updatedUser){
+        throw new ApiError(400, "Something went wrong while updating")
+    }
+
+    res
+    .status(200)
+    .json(
+        new ApiResponse(200, updatedUser, "user updated successfully")
+    )
+})
+
 export{
     createUser,
     loginUser,
-    getDetail
+    getDetail,
+    updateDetails
 }

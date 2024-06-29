@@ -1,4 +1,4 @@
-import mongoose from "mongoose"
+import mongoose, {Schema} from "mongoose"
 
 const productSchema = new Schema(
     {
@@ -14,16 +14,24 @@ const productSchema = new Schema(
             required: true 
         },
         rentalPrice: { 
-            type: Number, 
-            required: true 
+            type: Number
         },
         availabilityStatus: { 
             type: Boolean, 
             default: true 
         },
-        images: [{ 
+        image1: { 
             type: String 
-        }],
+        },
+        image2: { 
+            type: String 
+        },
+        image3: { 
+            type: String 
+        },
+        image4: { 
+            type: String 
+        },
         location: { 
             type: String, 
             required: true 
@@ -32,8 +40,8 @@ const productSchema = new Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User'
         }
-    }, 
+    },
     { timestamps: true }
 );
 
-const Product = mongoose.model("Product", productSchema);
+export const Product = mongoose.model("Product", productSchema);

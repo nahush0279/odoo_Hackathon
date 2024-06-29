@@ -24,7 +24,14 @@ const generateAccessAndrefreshToken = async(userId) => {
 }
 
 const createUser = asyncHandler(async(req, res) => {
-    const {name, phone, email, password, role, gender} = req.body
+    // const {name, phone, email, password, role, gender} = req.body
+    const name = 'yash shah'
+    const phone = '77780495674'
+    const password = 'Yash@123'
+    const email = 'yashshah04@gmail.com'
+    const role = 'Buyer'
+    const gender = true
+
 
     if (!(name && phone && email && password && role)) {
         return res.status(400).json(
@@ -73,11 +80,11 @@ const loginUser = asyncHandler(async(req, res) => {
         );
     }
 
-    const isPasswordValid = user.isPasswordCorrect(password)
+    const isPasswordValid = await user.isPasswordCorrect(password)
 
     if(!isPasswordValid){
         return res.status(400).json(
-            new ApiResponse(400, {}, "PAssword is incorrect")
+            new ApiResponse(400, {}, "Password is incorrect")
         );
     }
 

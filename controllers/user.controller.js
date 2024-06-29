@@ -24,18 +24,22 @@ const generateAccessAndrefreshToken = async(userId) => {
 }
 
 const createUser = asyncHandler(async(req, res) => {
-    const username = 'Meet Pokal';
+    const name = 'Meet patel';
+    const phone = '7778049568'
     const email = 'meetpokal04@gmail.com';
     const password = 'Meet@123';
+    const role = 'Buyer'
 
     if(!email){
         throw new ApiError(400, 'Email is required');
     }
 
     const user = await User.create({
-        username,
+        name,
         email,
-        password
+        phone,
+        password,
+        role
     })
 
     res
@@ -48,7 +52,7 @@ const createUser = asyncHandler(async(req, res) => {
 
 const loginUser = asyncHandler(async(req, res) => {
     const email = 'meetpokal04@gmail.com'
-    const password = 'Meet@0326'
+    const password = 'Meet@123'
 
     const user = await User.findOne({email})
 
@@ -84,7 +88,22 @@ const loginUser = asyncHandler(async(req, res) => {
     )
 })
 
+const getDetail = asyncHandler(async(req, res) => {
+    const user = await User.findById(req.user._id).select("-password")
+
+    if(!user){
+        throw new ApiError(400, "Not Found")
+    }
+
+    res
+    .status(200)
+    .json(
+        new ApiResponse(200, user, "User fetched successfully")
+    )
+})
+
 export{
     createUser,
-    loginUser
+    loginUser,
+    getDetail
 }

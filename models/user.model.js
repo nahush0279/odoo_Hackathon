@@ -5,19 +5,29 @@ import bcrypt from "bcrypt"
 // hello world
 const userSchema = new mongoose.Schema(
     {
-        username: {
+        name: {
             type: String,
-            required: true,
-            lowercase: true,
+            required: [true, 'Name is required'],
+            minlength: [2, 'Name must be at least 2 characters long']
         },
-        email: {
-            type: String,
-            required: true,
-            unique: true
+        phone: {
+            type: Number,
+            required: [true, 'Number is required'],
+            min: [0, 'Number must be a positive integer']
         },
         password: {
             type: String,
-            required: [true, "Password is required"]
+            required: [true, 'Password is required'],
+            minlength: [6, 'Password must be at least 6 characters long']
+        },
+        email: {
+            type: String,
+            required: [true, 'Email is required'],
+            match: [/^\S+@\S+\.\S+$/, 'Email is not valid']
+        },
+        role:{
+            type: String,
+            description: "must be a string and is required"
         },
         refreshToken: {
             type: String

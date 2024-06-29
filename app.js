@@ -13,11 +13,13 @@ app.use(cors({
 import userRouter from "./routes/user.route.js"
 import productRouter from "./routes/product.route.js"
 import bookRouter from './routes/booking.route.js'
+import cartRoutes from './routes/cart.route.js';
 
 //routes declaration
 app.use("/user", userRouter);
 app.use("/product", productRouter);
 app.use("/product/item", bookRouter)
+app.use('/api', cartRoutes);
 
 
 export { app }

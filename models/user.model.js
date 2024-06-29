@@ -29,6 +29,9 @@ const userSchema = new mongoose.Schema(
             type: String,
             description: "must be a string and is required"
         },
+        gender: {
+            type: Boolean
+        },
         refreshToken: {
             type: String
         }

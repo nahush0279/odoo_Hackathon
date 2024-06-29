@@ -24,14 +24,19 @@ const generateAccessAndrefreshToken = async(userId) => {
 }
 
 const createUser = asyncHandler(async(req, res) => {
-    const name = 'Meet patel';
-    const phone = '7778049568'
-    const email = 'meetpokal04@gmail.com';
-    const password = 'Meet@123';
-    const role = 'Buyer'
+    const {name, phone, email, password, role, gender} = req.body
 
-    if(!email){
-        throw new ApiError(400, 'Email is required');
+    if (!(name && phone && email && password && role)) {
+        return res.status(400).json(
+            new ApiResponse(400, {}, "provide all the input fields")
+        );
+    }
+
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+        return res.status(400).json(
+            new ApiResponse(400, {}, "Email already exist")
+        );
     }
 
     const user = await User.create({
@@ -39,7 +44,8 @@ const createUser = asyncHandler(async(req, res) => {
         email,
         phone,
         password,
-        role
+        role,
+        gender
     })
 
     res
@@ -51,19 +57,28 @@ const createUser = asyncHandler(async(req, res) => {
 })
 
 const loginUser = asyncHandler(async(req, res) => {
-    const email = 'meetpokal04@gmail.com'
-    const password = 'Meet@123'
+    const { email, password } = req.body
+
+    if(!(email && password)){
+        return res.status(400).json(
+            new ApiResponse(400, {}, "Provide email and password")
+        );
+    }
 
     const user = await User.findOne({email})
 
-    console.log(user);
+    if(!user){
+        return res.status(400).json(
+            new ApiResponse(400, {}, "User not found")
+        );
+    }
 
     const isPasswordValid = user.isPasswordCorrect(password)
 
-    console.log(isPasswordValid);
-
     if(!isPasswordValid){
-        throw new ApiError(400, "invalid user credentials")
+        return res.status(400).json(
+            new ApiResponse(400, {}, "PAssword is incorrect")
+        );
     }
 
     const {accessToken, refreshToken} = await generateAccessAndrefreshToken(user._id)
@@ -88,28 +103,14 @@ const loginUser = asyncHandler(async(req, res) => {
     )
 })
 
-const getDetail = asyncHandler(async(req, res) => {
-    const user = await User.findById(req.user._id).select("-password")
-
-    if(!user){
-        throw new ApiError(400, "Not Found")
-    }
-
-    res
-    .status(200)
-    .json(
-        new ApiResponse(200, user, "User fetched successfully")
-    )
-})
-
 const updateDetails = asyncHandler(async(req, res) => {
     // const { name, phone, email } = req.body
-    const name = 'meet';
-    const phone = '1234567890';
-    const email = 'meet@gmail.com';
+    const {name, phone, email, gender} = req.body
 
-    if(!(name && phone && email)){
-        throw new ApiError(400, "Please provide all the details")
+    if(!(name && phone && email && gender)){
+        return res.status(400).json(
+            new ApiResponse(400, {}, "provide input firlds. name, email, phone")
+        );
     }
 
     const updatedUser = await User.findByIdAndUpdate(
@@ -118,14 +119,17 @@ const updateDetails = asyncHandler(async(req, res) => {
             $set: {
                 name,
                 email,
-                phone
+                phone, 
+                gender
             }
         },
         {new:true}, //return the updated document
     ).select("-password");
 
     if(!updatedUser){
-        throw new ApiError(400, "Something went wrong while updating")
+        return res.status(400).json(
+            new ApiResponse(400, {}, "Something went wrong while updating")
+        );
     }
 
     res
@@ -138,6 +142,5 @@ const updateDetails = asyncHandler(async(req, res) => {
 export{
     createUser,
     loginUser,
-    getDetail,
     updateDetails
 }

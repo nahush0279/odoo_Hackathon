@@ -24,15 +24,8 @@ const generateAccessAndrefreshToken = async(userId) => {
 }
 
 const createUser = asyncHandler(async(req, res) => {
-    // const {name, phone, email, password, role, gender} = req.body
-    const name = 'yash shah'
-    const phone = '77780495674'
-    const password = 'Yash@123'
-    const email = 'yashshah04@gmail.com'
-    const role = 'Buyer'
-    const gender = true
-
-
+    const {name, phone, email, password, role, gender} = req.body
+    
     if (!(name && phone && email && password && role)) {
         return res.status(400).json(
             new ApiResponse(400, {}, "provide all the input fields")

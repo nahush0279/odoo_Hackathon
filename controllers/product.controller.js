@@ -120,8 +120,10 @@ const product = asyncHandler(async (req, res) => {
 
 const getAllProduct = asyncHandler(async(req, res) => {
     try {
-        const products = await Product.find();
-        
+        // Find all products and populate the 'owner' field with details from 'User'
+        const products = await Product.find().populate('owner', 'name');
+
+        // Assuming ApiResponse is a custom class or object
         res.status(200).json(
             new ApiResponse(200, products, "Products retrieved successfully")
         );

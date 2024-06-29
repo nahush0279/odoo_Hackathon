@@ -7,11 +7,11 @@ import mongoose from "mongoose";
 
 const product = asyncHandler(async (req, res) => {
     // const {name, description, category, rentalPrice, location} = req.body
-    const name = 'table'
-    const description = 'table description'
-    const category = 'homemade'
-    const rentalPrice = 100
-    const location = "gandhinagar"
+    const name = 'study cupboard'
+    const description = 'description about cupboard'
+    const category = 'sitting'
+    const rentalPrice = 1000
+    const location = 'ahmedabad'
 
     if(!(name && description && category && rentalPrice && location)){
         return res.status(400).json(
@@ -95,7 +95,45 @@ const product = asyncHandler(async (req, res) => {
     )
 }) 
 
+// const updateProduct = asyncHandler(async(req, res) => {
+//     const { name, description, category, rentalPrice, location } = req.body;
+//     if(!(name && description && category && rentalPrice && location)){
+//         return res.status(400).json(
+//             new ApiResponse(400, {}, "Enter all the values")
+//         );
+//     }
+//     const updatedproduct = await User.findByIdAndUpdate(
+//         req.product?._id,
+//         {
+//             $set: {
+//                 name,
+//                 description,
+//                 category,
+//                 rentalPrice,
+//                 location,
+//             }
+//         },
+//         {new:true}, //return the updated document
+//     ).select("-password");
+
+// })
+
+const getAllProduct = asyncHandler(async(req, res) => {
+    try {
+        const products = await Product.find();
+        
+        res.status(200).json(
+            new ApiResponse(200, products, "Products retrieved successfully")
+        );
+    } catch (error) {
+        res.status(500).json(
+            new ApiResponse(500, {}, "An error occurred while retrieving products")
+        );
+    }
+})
+
 
 export {
-    product
+    product,
+    getAllProduct,
 }
